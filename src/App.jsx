@@ -1,20 +1,54 @@
+import {  useEffect, useState } from 'react';
 import './App.css'
-import conf from './conf/conf'
+import { useDispatch } from 'react-redux';
+import authService from './appwrite/auth';
+import { login, logout } from './store/authSlice';
+import { Footer, Header } from './components';
+import { Outlet } from 'react-router-dom';
 
 function App() {
  
-  console.log(conf.appwriteUrl );
-  console.log(conf.appwriteProject );
-  console.log(conf.appwriteDatabase );
-  console.log(conf.appwriteCollection );
+
+  const {loading ,setLoading} = useState(true) ;
+const dispatch = useDispatch();
+
+useEffect(() => {
+authService.getCurrentUser()
+.then((userdata)=>{
+  if(userdata){
+    dispatch(login({userData:userdata}));
+  }
+  else{
+    dispatch(logout());
+  }
+})
+.finally(()=>{ setLoading(false) })
+
+
+
+});
+
+  return !loading?(<div className="App">
+ <Header/>
+ <main>
+        <div className="container">
+          
+          <h1>Welcome to the App</h1>
+          <p>This is a simple React application.</p>
+          <p>Use the navigation bar to explore.</p>
+          <p>Click on the links to see different pages.</p>
+          <p>Enjoy your stay!</p>
+          <p>Here is the content of the page:</p>
+
+          <Outlet/>
+</div>
+
+ </main>
+      
+        <Footer/>
+  </div>):null;
+
   
-
-  return (
-    <>
-
- <h1 className=' text-3xl bg-black text-white  py-2  px-auto border-3 border-gray-600 shadow-lg justify-center flex'>appwrite Megablog project </h1>
-    </>
-  )
 }
 
 export default App
